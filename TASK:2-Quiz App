@@ -1,0 +1,117 @@
+import 'package:flutter/material.dart';
+
+void main() => runApp(MyApp());
+
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Quiz App',
+      debugShowCheckedModeBanner: false,
+      home: QuizScreen(),
+    );
+  }
+}
+
+class QuizScreen extends StatefulWidget {
+  @override
+  _QuizScreenState createState() => _QuizScreenState();
+}
+
+class _QuizScreenState extends State<QuizScreen> {
+  List<Question> questions = [
+    Question(text: 'Flutter is a mobile app development framework.', correctAnswer: true),
+    Question(text: 'Dart is the primary programming language for Flutter.', correctAnswer: true),
+    Question(text: 'Widgets in Flutter are stateful by default.', correctAnswer: false),
+    Question(text: "Flutter Framework was developed by Microsoft", correctAnswer:false ),
+    Question(text: "Flutter have 3 main widgets", correctAnswer: false),
+  ];
+
+  int currentQuestionIndex = 0;
+  int score = 0;
+  void answerQuestion(bool correctAnswer) {
+    if (questions[currentQuestionIndex].correctAnswer) {
+      score++;
+    }
+    setState(() {
+      if (currentQuestionIndex < questions.length - 1) {
+        currentQuestionIndex++;
+      } else {
+        // Quiz is finished
+        showResultDialog();
+      }
+    });
+  }
+
+  void showResultDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Quiz Result'),
+          content: Text('You scored $score out of ${questions.length}'),
+          actions:[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                resetQuiz();
+              },
+              child: Text('Play Again'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void resetQuiz() {
+    setState(() {
+      currentQuestionIndex = 0;
+      score = 0;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Center(child: Text('Quiz App')),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children:[
+            Text(
+              questions[currentQuestionIndex].text,
+              style: TextStyle(fontSize: 24),
+            ),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                  onPressed: () => answerQuestion(true),
+                  child: Text('True'),
+                ),
+                SizedBox(width: 20),
+                ElevatedButton(
+                  onPressed: () => answerQuestion(false),
+                  child: Text('False'),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class Question {
+  final String text;
+  final bool correctAnswer;
+  Question({
+    required this.text,required this.correctAnswer
+  });
+}
